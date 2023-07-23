@@ -83,10 +83,21 @@ const columnsNames = apiFields
 
 console.log(columnsNames)
 
-const theadRow = document.querySelector('#example thead tr');
+
 
 // Populate html with fields name for columns and toogle buttons
-const toogleContainerElement = document.getElementById('toogle-container');    
+const toogleContainerElement = document.getElementById('toogle-container'); 
+const theadRow = document.querySelector('#example thead tr');
+
+    apiFields
+        .filter(field => field.hide == false)
+        .forEach((field, index) => {
+            const link = document.createElement('a');
+            link.className = 'toggle-vis';
+            link.dataset.column = index;
+            link.text = field.newName;
+            toogleContainerElement.appendChild(link);   
+    });
 
     apiFields
         .filter(field => field.hide == false)
@@ -94,25 +105,10 @@ const toogleContainerElement = document.getElementById('toogle-container');
         // column fields
         const thElement = document.createElement('th');
         thElement.textContent = field.newName;
-        theadRow.appendChild(thElement);
-
-        // toogle buttons
-        // const link = document.createElement('a');
-        // link.className = 'toggle-vis';
-        // link.dataset.column = field.id;
-        // link.text = field.newName;
-        // toogleContainerElement.appendChild(link);  
+        theadRow.appendChild(thElement); 
     });
 
-    apiFields
-        .filter(field => field.hide == false)
-        .forEach(field => {
-            const link = document.createElement('a');
-            link.className = 'toggle-vis';
-            link.dataset.column = field.id;
-            link.text = field.newName;
-            toogleContainerElement.appendChild(link);   
-    });
+    
 
 // Managing toogle buttons click
 const toggleLinks = document.querySelectorAll('.toggle-vis');
@@ -120,7 +116,7 @@ const toggleLinks = document.querySelectorAll('.toggle-vis');
 toggleLinks.forEach(link => {
     link.addEventListener('click', function() {
         const columnIndex = parseInt(this.dataset.column);
-        console.log(columnIndex + 'is clicked');
+        console.log(columnIndex + ' is clicked ' + link.text);
     })
 })
     
