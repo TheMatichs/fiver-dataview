@@ -1,3 +1,5 @@
+
+
 var apiData = [
     [
         23,
@@ -84,7 +86,6 @@ const columnsNames = apiFields
 console.log(columnsNames)
 
 
-
 // Populate html with fields name for columns and toogle buttons
 const toogleContainerElement = document.getElementById('toogle-container'); 
 const theadRow = document.querySelector('#example thead tr');
@@ -120,14 +121,9 @@ toggleLinks.forEach(link => {
     })
 })
     
-    
-
-
 const table = $('#example').DataTable( {
     data: []
 } );
-
-
 
 document.querySelectorAll('a.toggle-vis').forEach((el) => {
     el.addEventListener('click', function (e) {
@@ -144,13 +140,60 @@ document.querySelectorAll('a.toggle-vis').forEach((el) => {
 
 
 const userAction = async () => {
-    const response = await fetch('http://220.135.145.156:5014/api/getFields');
-    const myJson = await response.json(); //extract JSON from the http response
-    // do something with myJson
-    console.log("helo from useraction")
-    console.log(myJson)
-    return myJson;
+    const apiUrl = 'http://localhost:3000/api/getDataList'; // Replace this with the proxy server URL and the desired API endpoint
+
+fetch(apiUrl)
+  .then(response => response.json())
+  .then(data => {
+    console.log(data); // Handle the API response data here
+  })
+  .catch(error => {
+    console.error('Error fetching data:', error);
+  });
+
+    // const response = await fetch('http://220.135.145.156:5014/api/getFields');
+    // const myJson = await response.json(); //extract JSON from the http response
+    // // do something with myJson
+    // console.log("helo from useraction")
+    // console.log(myJson)
+    // return myJson;
   }
+
+  userAction()
+  /*
+   Uploading csv file
+  */
+
+   $('#upload').click(function(){
+
+    var csv = $('#filename');
+    var csvFile = csv[0].files[0];
+    var extension = csv.val().split(".").pop().toLowerCase();
+    
+    if($.inArray(extension, ["csv","xlsx"]) === -1){
+        alert('upload csv');
+        return false;
+    }
+    if(csvFile != undefined){
+        reader = new FileReader();
+        reader.onload = function(e){
+
+            const workbook = XLSX.read(e.target.result, { type: 'binary' });
+
+            // Assuming you want to read data from the first sheet (Sheet1)
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+          
+            // Convert the worksheet data to JSON format
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+          
+            // Now 'jsonData' contains an array of objects representing each row in the XLSX file
+            // You can use this 'jsonData' array to work with your data or perform other operations
+            console.log(jsonData);
+        }
+        reader.readAsText(csvFile);
+    }
+});
 
 
 

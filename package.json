@@ -1,0 +1,22 @@
+{
+  "name": "dataview-project",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000f\u0000i\u0000v\u0000e\u0000r\u0000r\u0000-\u0000d\u0000a\u0000t\u0000a\u0000v\u0000i\u0000e\u0000w\u0000\r\u0000 \u0000# fiver-dataview # fiver-dataview",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheMatichs/fiver-dataview.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheMatichs/fiver-dataview/issues"
+  },
+  "homepage": "https://github.com/TheMatichs/fiver-dataview#readme",
+  "dependencies": {
+    "http-proxy": "^1.18.1"
+  }
+}
