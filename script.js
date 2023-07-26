@@ -181,25 +181,13 @@ document.querySelectorAll('a.toggle-vis').forEach((el) => {
         return false;
     }
     if(csvFile != undefined){
-        reader = new FileReader();
-        reader.onload = function(e){
-
-            const workbook = XLSX.read(e.target.result, { type: 'binary' });
-
-            // Assuming you want to read data from the first sheet (Sheet1)
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-          
-            // Convert the worksheet data to JSON format
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
-          
-            // Now 'jsonData' contains an array of objects representing each row in the XLSX file
-            // You can use this 'jsonData' array to work with your data or perform other operations
-            console.log(jsonData);
+        readXlsxFile(csvFile).then(function(data){
+            console.log(data);
+        })
         }
         reader.readAsText(csvFile);
     }
-});
+);
 
 
 /*
