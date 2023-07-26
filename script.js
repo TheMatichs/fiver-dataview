@@ -81,6 +81,8 @@ var apiData = [
 var apiFields = [];
 var apiData = [];
 var rendredViewData = []; // this is used to render each row just for the table, removing the id and date 
+var dataExtractedFromFile = [];
+var columnsExtractedFromFile = [];
 
 // This functions fetches fields from backend and put them in the ApiFields variable 
 await fetchGetEndPoint('/api/getFields').then((getFieldsResult) => {
@@ -91,7 +93,7 @@ await fetchGetEndPoint('/api/getFields').then((getFieldsResult) => {
 
 await fetchPostEndPoint('/api/getDataList', {
     "type":"A",
-    "fields": []
+    "fields": [ {"a_f":["1001"]}]
 }).then((getDataListResult) => {
     console.log(getDataListResult)
     apiData = getDataListResult;
@@ -182,10 +184,13 @@ document.querySelectorAll('a.toggle-vis').forEach((el) => {
     }
     if(csvFile != undefined){
         readXlsxFile(csvFile).then(function(data){
-            console.log(data);
+            columnsExtractedFromFile = data[0];
+            dataExtractedFromFile = data.slice(1, data.length)
+            dataExtractedFromFile.map(row => {
+                table.row.add(row).draw();
+            });
         })
         }
-        reader.readAsText(csvFile);
     }
 );
 
