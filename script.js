@@ -1,4 +1,5 @@
 
+const URL = 'http://localhost:3000'
 
 var apiData = [
     [
@@ -72,19 +73,41 @@ var apiData = [
     ]
 ]
 
+// fetchPostEndPoint('/api/getDataList', {
+//     "type":"A",
+//     "fields": [ {"i_f":["kuiu", "puma"]}]
+// })
 
-var apiFields = [{"id":301,"name":"A_F","newName":"STT NO","hide":true},{"id":302,"name":"B_F","newName":"THỜI GIAN GỬI MAIL 通知","hide":false},{"id":303,"name":"C_F","newName":"EMAIL","hide":true},{"id":304,"name":"D_F","newName":"nhà kho đó 庫別","hide":false},{"id":305,"name":"E_F","newName":"NGÀY DỰ KIẾN 預計","hide":false},{"id":306,"name":"F_F","newName":"NGÀY THỰC TẾ VỀ 實際","hide":false},{"id":307,"name":"G_F","newName":"送貨單號 Mã đơn giao hàng","hide":false},{"id":308,"name":"H_F","newName":"SỐ KIỆN CỦA KHO NÀO  件數","hide":false},{"id":309,"name":"I_F","newName":"KHÁCH HÀNG 客戶","hide":true},{"id":310,"name":"J_F","newName":"HÀNG BÙ 補貨","hide":false},{"id":311,"name":"K_F","newName":"chổ nàchổ nào 來源 ","hide":false},{"id":312,"name":"L_F","newName":"Giờ bắt đầu bốc/dỡ hàng 卸貨","hide":false},{"id":313,"name":"M_F","newName":"Tên người","hide":true},{"id":314,"name":"N_F","newName":"SỐ XE 車號","hide":true},{"id":315,"name":"O_F","newName":"Seal/Số công 櫃號","hide":false},{"id":316,"name":"P_F","newName":"xong 完成時間","hide":false},{"id":317,"name":"Q_F","newName":"SL HÀNG VỀ 實收","hide":false},{"id":318,"name":"R_F","newName":"NÉN FILE 正確檔","hide":true},{"id":319,"name":"S_F","newName":"NHÀ CUNG ỨNG 供應商","hide":false}]
+var apiFields = [];
+var apiData = [];
+var rendredViewData = []; // this is used to render each row just for the table, removing the id and date 
+
+// This functions fetches fields from backend and put them in the ApiFields variable 
+await fetchGetEndPoint('/api/getFields').then((getFieldsResult) => {
+    console.log('GET FIELDS :')
+    console.log(getFieldsResult)
+    apiFields = getFieldsResult;
+})
+
+await fetchPostEndPoint('/api/getDataList', {
+    "type":"A",
+    "fields": []
+}).then((getDataListResult) => {
+    console.log(getDataListResult)
+    apiData = getDataListResult;
+    rendredViewData = apiData.map(row => row.slice(1, row.length - 1));
+    console.log(rendredViewData)
+})
 
 const columnsNames = apiFields
-    .filter(row => row.hide == false)
-    .map(rowField => {
-    return {
-      data: rowField.newName
-    };
-  });
+.filter(row => row.hide == false)
+.map(rowField => {
+return {
+  title: rowField.newName
+};
+});
 
 console.log(columnsNames)
-
 
 // Populate html with fields name for columns and toogle buttons
 const toogleContainerElement = document.getElementById('toogle-container'); 
@@ -111,7 +134,7 @@ const theadRow = document.querySelector('#example thead tr');
 
     
 
-// Managing toogle buttons click
+// Managing toogle buttons click for fields
 const toggleLinks = document.querySelectorAll('.toggle-vis');
 
 toggleLinks.forEach(link => {
@@ -120,9 +143,14 @@ toggleLinks.forEach(link => {
         console.log(columnIndex + ' is clicked ' + link.text);
     })
 })
-    
+
 const table = $('#example').DataTable( {
-    data: []
+    // columnDefs: [{
+    //     "defaultContent": "unknown",
+    //     "targets": "_all"
+    //   }],
+    columns: columnsNames,
+    data: rendredViewData
 } );
 
 document.querySelectorAll('a.toggle-vis').forEach((el) => {
@@ -138,28 +166,6 @@ document.querySelectorAll('a.toggle-vis').forEach((el) => {
 });
 
 
-
-const userAction = async () => {
-    const apiUrl = 'http://localhost:3000/api/getDataList'; // Replace this with the proxy server URL and the desired API endpoint
-
-fetch(apiUrl)
-  .then(response => response.json())
-  .then(data => {
-    console.log(data); // Handle the API response data here
-  })
-  .catch(error => {
-    console.error('Error fetching data:', error);
-  });
-
-    // const response = await fetch('http://220.135.145.156:5014/api/getFields');
-    // const myJson = await response.json(); //extract JSON from the http response
-    // // do something with myJson
-    // console.log("helo from useraction")
-    // console.log(myJson)
-    // return myJson;
-  }
-
-  userAction()
   /*
    Uploading csv file
   */
@@ -196,4 +202,60 @@ fetch(apiUrl)
 });
 
 
+/*
+    FETCHING API
+*/
+
+async function fetchPostEndPoint (endPoint ,requestBody) { {
+    const url = URL + endPoint;
+    console.log(endPoint)
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    };
+    
+    return fetch(url, requestOptions)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        return data;
+      })
+      .catch(error => {
+        return error;
+      });
+    }
+}
+
+async function fetchGetEndPoint(endPoint) { {
+        const url = URL + endPoint;
+      
+        const requestOptions = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        };
+        
+        return fetch(url, requestOptions)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            return data;
+          })
+          .catch(error => {
+            return error;
+          });
+        }
+    }
 
