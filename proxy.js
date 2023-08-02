@@ -3,7 +3,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     app = express();
 
-var myLimit = typeof(process.argv[2]) != 'undefined' ? process.argv[2] : '100kb';
+var myLimit = typeof(process.argv[2]) != 'undefined' ? process.argv[2] : '6000kb';
 console.log('Using limit: ', myLimit);
 
 const targetURL = 'http://220.135.145.156:5014';
