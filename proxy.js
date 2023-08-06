@@ -27,7 +27,7 @@ app.all('*', function (req, res, next) {
                 if (error) {
                     console.error('error: ' + response.statusCode)
                 }
-                console.log('RESPONSE : ' + res)
+                console.log('RESPONSE : ' + JSON.stringify(response))
             }).pipe(res);
     }
 });

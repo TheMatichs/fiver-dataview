@@ -21,7 +21,6 @@ var actionColumns = [{ // This is going to be unshifted to renderViewData for th
 
 const titleMapping = {};
 
-
 // This functions fetches fields from backend and put them in the ApiFields variable 
 await fetchGetEndPoint('/api/getFields').then((getFieldsResult) => {
     console.log('GET FIELDS :')
@@ -38,7 +37,7 @@ await fetchGetEndPoint('/api/getFields').then((getFieldsResult) => {
 
 await fetchPostEndPoint('/api/getDataList', {
     "type":"A",
-    "fields": [ ]
+    "fields": [ {"a_f":["1001", "1002"]}]
 }).then((getDataListResult) => {
     apiData = getDataListResult.map((row) => {
       const obj = {};
@@ -55,10 +54,12 @@ await fetchPostEndPoint('/api/getDataList', {
 })
 
 const columnsNames = apiFields
-.filter(row => row.hide == '')
+// .filter(row => row.hide == '')
 .map((rowField) => {
 return {
-  data: rowField.newName
+  data: rowField.newName,
+  name: rowField.name,
+  hide: rowField.hide
 };
 });
 
@@ -69,7 +70,9 @@ return {
 // Populate html with fields name for columns and toogle buttons
 const toogleContainerElement = document.getElementById('toogle-container'); 
 const theadRow = document.querySelector('#example thead tr');
-let apiFieldsLength = apiFields.filter(field => field.hide == '').length;
+let apiFieldsLength = apiFields
+// .filter(field => field.hide == '')
+.length;
 
 /* USED TO POPULATE TOGGLE COLUMNS ON THE TOP */
     apiFields
@@ -83,7 +86,7 @@ let apiFieldsLength = apiFields.filter(field => field.hide == '').length;
 
 /* USED TO POPULATE TOGGLE COLUMNS ON THE DATA TABLE */
     apiFields
-        .filter(field => field.hide == '')
+        // .filter(field => field.hide == '')
         .forEach((field, index) => {
         // column fields
         const thElement = document.createElement('th');
@@ -99,17 +102,6 @@ let apiFieldsLength = apiFields.filter(field => field.hide == '').length;
         }
     });
 
-    
-
-// Managing toogle buttons click for fields
-const toggleLinks = document.querySelectorAll('.toggle-vis');
-
-toggleLinks.forEach(link => {
-    link.addEventListener('click', function() {
-        const columnIndex = parseInt(this.dataset.column);
-       
-    })
-})
 
 const editor = new DataTable.Editor({
   idSrc: '',
@@ -128,7 +120,31 @@ const table = $('#example').DataTable( {
     columns: columnsNames,
     data: apiData,
     dom: 'Bfrtip',
+    buttons: [
+      'colvis'
+    ]
 } );
+/**
+ * 
+ */
+columnsNames.map((column, index) => {
+  let visible =  column.hide == 'Y' ? false : true;
+  table.column(index).visible(visible)
+})
+
+// Adding an event listener for column visibility changes
+table.on('column-visibility.dt', function (e, settings, column, state) {
+  // The 'column-visibility.dt' event is triggered when column visibility changes
+  if (state == false) {
+    fetchPostEndPoint('/api/hideFields', {
+      "fields": [columnsNames[column].name]
+    }).then((res) => console.log('HIDING FIELD ', columnsNames[column], res))
+  } else {
+    fetchPostEndPoint('/api/unhideFields', {
+      "fields": [columnsNames[column].name]
+    }).then((res) => console.log('UNHINDING FIELD ', columnsNames[column], res))
+  }
+});
 
 // Edit record
 table.on('click', 'td.editor-edit', function (e) {
@@ -157,7 +173,7 @@ document.querySelectorAll('a.toggle-vis').forEach((el) => {
       
         let columnIdx = e.target.getAttribute('data-column');
         let column = table.column(columnIdx);
-        console.warn(column);
+       
         // Toggle the visibility
         column.visible(!column.visible());
     });
